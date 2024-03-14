@@ -37,18 +37,15 @@ public class ShortenController {
 	}
 	
 	@GetMapping("shorten")
-    public ResponseEntity<?> redirectToOriginalURL(@RequestParam String url) {
-		
+	public ResponseEntity<?> redirectToOriginalURL(@RequestParam String url) {
 		try {
-			
-			return ResponseEntity.status(HttpStatus.OK)
-	                .header("Location", url)
-	                .build();
-			
+			var urlRedirecionamento = service.redirecionaAutomaticoUrl(url);
+			return ResponseEntity.status(HttpStatus.OK).header("Location", urlRedirecionamento).build();
 		} catch (Exception e) {
-			return null;
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("", "002", "SHORTENED URL NOT FOUND"));
 		}
-		
+
 	}
 
 }
