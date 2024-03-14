@@ -1,5 +1,7 @@
 package com.shortener.domains.shorten.service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,15 @@ public class ShortenService {
 	public ShortenDTO shortenUrl(String originalUrl, String customAlias) {
 		
 		if(customAlias != null && repository.findByAlias(customAlias) != null) {
-			throw new RuntimeException("{ERR_CODE: 001, Description:CUSTOM ALIAS ALREADY EXISTS}");
+			throw new RuntimeException();
 		}
+		var alias = this.generateAlias(originalUrl);
 		
-		Shorten shorten = new Shorten();
+		var shorten = new Shorten();
 		
 		shorten.setUrlOriginal(originalUrl);
-		shorten.setUrlShorten(this.generateAlias(originalUrl));
-		shorten.setAlias(shorten.getUrlShorten());
+		shorten.setAlias(alias);
+		shorten.setUrlShorten(originalUrl + "/" + alias);
 		shorten.setDateCreate(LocalDateTime.now());
 		
 		repository.save(shorten);
@@ -35,6 +38,20 @@ public class ShortenService {
 	}
 	
 	private String generateAlias(String originalUrl) {
-        return "alias_" + originalUrl.hashCode();
+		try {
+			var digest = MessageDigest.getInstance("SHA-256");
+			var hashByte = digest.digest(originalUrl.getBytes());
+			var hexString = new StringBuilder();
+			for(byte b : hashByte) {
+				var hex = Integer.toHexString(0xff & b);
+				if(hex.length() == 1) hexString.append('0');
+				hexString.append(hex);
+			}
+			return hexString.substring(0,8);
+			
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return null;
     }
 }
