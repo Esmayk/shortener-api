@@ -37,6 +37,16 @@ public class ShortenService {
 		
 	}
 	
+	public String redirecionaAutomaticoUrl(String originalUrl) {
+		
+		var shorten = repository.findByUrlOriginal(originalUrl);
+		if(shorten == null) {
+			throw new RuntimeException();
+		}
+		return shorten.getUrlShorten();
+	}
+	
+	
 	private String generateAlias(String originalUrl) {
 		try {
 			var digest = MessageDigest.getInstance("SHA-256");

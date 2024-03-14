@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,15 +29,23 @@ public class ShortenController {
 			var duration = Duration.between(start, end);
 			dto.setDuration(duration.toMillis() + " ms");
 			return ResponseEntity.ok(dto);
-			
+
 		} catch (Exception e) {
-			return ResponseEntity
-					.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ErrorResponse(customAlias, "001", "CUSTOM ALIAS ALREADY EXISTS"));
 		}
-		
-		
-		
+	}
+	
+	@GetMapping("shorten")
+	public ResponseEntity<?> redirectToOriginalURL(@RequestParam String url) {
+		try {
+			var urlRedirecionamento = service.redirecionaAutomaticoUrl(url);
+			return ResponseEntity.status(HttpStatus.OK).header("Location", urlRedirecionamento).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("", "002", "SHORTENED URL NOT FOUND"));
+		}
+
 	}
 
 }
