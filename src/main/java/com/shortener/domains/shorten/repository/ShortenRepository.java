@@ -9,4 +9,5 @@ import com.shortener.domains.shorten.model.Shorten;
 public interface ShortenRepository extends JpaRepository<Shorten, Long> {
 
 	Shorten findByAlias(String alias);
+	Shorten findByUrlOriginal(String urlOriginal);
 }
