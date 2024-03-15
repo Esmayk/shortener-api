@@ -58,7 +58,7 @@ public class ShortenService {
 		return repository.findByAlias(customAlias);
 	}
 	
-	private String generateAlias(String originalUrl) {
+	public String generateAlias(String originalUrl) {
 		try {
 			var digest = MessageDigest.getInstance("SHA-256");
 			var hashByte = digest.digest(originalUrl.getBytes());
