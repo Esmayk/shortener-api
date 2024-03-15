@@ -2,6 +2,7 @@ package com.shortener.domains.shorten.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -114,7 +115,7 @@ public class ShortenServiceTest {
     }
 	
 	@Test
-	void whengetTop10MostAccessedURLsThenReturnSuccess() {
+	void whenGetTop10MostAccessedURLsThenReturnSuccess() {
 		when(repository.findFirst10ByOrderByAccessCountDesc()).thenReturn(optionalShorten);
 		var response = service.getTop10MostAccessedURLs();
 		
@@ -123,6 +124,15 @@ public class ShortenServiceTest {
         assertEquals(listShorten, response);
         verify(repository, times(1)).findFirst10ByOrderByAccessCountDesc();
 		
+	}
+	
+	@Test 
+	void whenGenerateAliasThenReturnSuccess() {
+		var response = service.generateAlias(URL_ORIGINAL);
+		assertNotNull(response);
+		assertEquals(ALIAS, response);
+		assertEquals(8, response.length());
+		assertTrue(response.matches("[a-f0-9]+"));
 	}
 
 	private void startShorten() {
