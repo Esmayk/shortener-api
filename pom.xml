@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.shortener</groupId>
 	<artifactId>shortener-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>shortener-api</name>
 	<description>Projeto encurtador de urls</description>
 	<properties>
