@@ -2,6 +2,7 @@ package com.shortener.domains.shorten.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -30,11 +31,12 @@ public class ShortenServiceTest {
 	private ShortenRepository repository;
 
 	private static final Long ID = 1L;
-	private static final String URL_BASE = "http://meuservidor.com/";
+	private static final String URL_BASE = "http://localhost:8080/";
     private static final String URL_ORIGINAL = "http://example.com/original";
-    private static final String ALIAS = "custom";
+    private static final String ALIAS = "9cce4623";
     private static final LocalDateTime DATECREATE = LocalDateTime.now();
     private static final Long ACCESSCOUNT = 5L;
+    private static final String DURATION = "20 ms";
     
     private Shorten shorten;
     private ShortenDTO shortenDTO;
@@ -61,10 +63,23 @@ public class ShortenServiceTest {
     	assertEquals(ACCESSCOUNT, response.getAccessCount());
     }
     
+    @Test
+    void whenShortenUrlSuccess() {
+    	when(repository.save(any())).thenReturn(shorten);
+    	
+    	var response = service.shortenUrl(URL_ORIGINAL, ALIAS);
+    	
+    	assertNotNull(response);
+    	assertEquals(ShortenDTO.class, response.getClass());
+    	assertEquals(URL_ORIGINAL, response.getUrlOriginal());
+    	assertEquals(URL_BASE + ALIAS, response.getUrlShorten());
+    	assertEquals(ALIAS, response.getAlias());
+    }
+    
     private void startShorten() {
     	shorten = new Shorten(ID, URL_ORIGINAL, URL_BASE + ALIAS, ALIAS, DATECREATE, ACCESSCOUNT);
     	shortenDTO = new ShortenDTO(shorten);
-    	shortenDTO.setDuration("20 ms");
+    	shortenDTO.setDuration(DURATION);
     	listShorten = new ArrayList<>();
     	listShorten.add(shorten);
     }
