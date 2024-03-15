@@ -76,6 +76,27 @@ public class ShortenServiceTest {
     	assertEquals(ALIAS, response.getAlias());
     }
     
+    @Test
+    void whenShortenUrlAnRuntimeException() {
+    	when(repository.findByAlias(anyString())).thenThrow(new RuntimeException());
+    	try {
+			service.findByAlias(ALIAS);
+		} catch (Exception e) {
+			assertEquals(RuntimeException.class, e.getClass());
+		}
+    }
+    
+    @Test
+    void whenredirecionaAutomaticoUrlThenReturnAnIllegalArgumentException() {
+    	when(repository.findByAlias(anyString())).thenThrow(new IllegalArgumentException("SHORTENED URL NOT FOUND"));
+    	try {
+			service.findByAlias(ALIAS);
+		} catch (Exception e) {
+			assertEquals(IllegalArgumentException.class, e.getClass());
+			assertEquals("SHORTENED URL NOT FOUND", e.getMessage());
+		}
+    }
+    
     private void startShorten() {
     	shorten = new Shorten(ID, URL_ORIGINAL, URL_BASE + ALIAS, ALIAS, DATECREATE, ACCESSCOUNT);
     	shortenDTO = new ShortenDTO(shorten);
