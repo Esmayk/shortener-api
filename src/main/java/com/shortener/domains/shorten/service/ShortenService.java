@@ -3,6 +3,7 @@ package com.shortener.domains.shorten.service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,9 @@ import com.shortener.domains.shorten.repository.ShortenRepository;
 
 @Service
 public class ShortenService {
-
+	
+	private static String URL_BASE = "http://localhost:8080/";
+	
 	@Autowired
 	private ShortenRepository repository;
 	
@@ -28,7 +31,8 @@ public class ShortenService {
 		
 		shorten.setUrlOriginal(originalUrl);
 		shorten.setAlias(alias);
-		shorten.setUrlShorten(originalUrl + "/" + alias);
+		shorten.setUrlShorten(URL_BASE + alias);
+		shorten.setAccessCount(1L);
 		shorten.setDateCreate(LocalDateTime.now());
 		
 		repository.save(shorten);
@@ -37,15 +41,18 @@ public class ShortenService {
 		
 	}
 	
-	public String redirecionaAutomaticoUrl(String originalUrl) {
+	public String redirecionaAutomaticoUrl(String customAlias) {
 		
-		var shorten = repository.findByUrlOriginal(originalUrl);
+		var shorten = repository.findByAlias(customAlias);
 		if(shorten == null) {
-			throw new RuntimeException();
+			throw new IllegalArgumentException("SHORTENED URL NOT FOUND");
 		}
-		return shorten.getUrlShorten();
+		return shorten.getUrlOriginal();
 	}
 	
+	public List<Shorten> getTop10MostAccessedURLs() {
+		return repository.findFirst10ByOrderByAccessCountDesc().get();
+	}
 	
 	private String generateAlias(String originalUrl) {
 		try {
