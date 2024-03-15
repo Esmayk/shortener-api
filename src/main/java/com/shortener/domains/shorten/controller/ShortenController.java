@@ -2,15 +2,19 @@ package com.shortener.domains.shorten.controller;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
+import com.shortener.domains.shorten.model.Shorten;
 import com.shortener.domains.shorten.service.ShortenService;
 import com.shortener.exception.ErrorResponse;
 
@@ -36,16 +40,17 @@ public class ShortenController {
 		}
 	}
 	
-	@GetMapping("shorten")
-	public ResponseEntity<?> redirectToOriginalURL(@RequestParam String url) {
-		try {
-			var urlRedirecionamento = service.redirecionaAutomaticoUrl(url);
-			return ResponseEntity.status(HttpStatus.OK).header("Location", urlRedirecionamento).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ErrorResponse("", "002", "SHORTENED URL NOT FOUND"));
-		}
+	@GetMapping("{customAlias}")
+	public RedirectView redirectToOriginalURL(@PathVariable String customAlias) {
+		var urlRedirecionamento = service.redirecionaAutomaticoUrl(customAlias);
+		return new RedirectView(urlRedirecionamento);
 
 	}
+	
+	 @GetMapping("shorten/top-10")
+	    public ResponseEntity<List<Shorten>> getTop10MostAccessedURLs() {
+	        var top10URLs = service.getTop10MostAccessedURLs();
+	        return ResponseEntity.ok(top10URLs);
+	    }
 
 }
