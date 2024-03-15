@@ -29,6 +29,17 @@ public class Shorten implements Serializable {
 		super();
 	}
 
+	public Shorten(Long id, String urlOriginal, String urlShorten, String alias, LocalDateTime dateCreate,
+			Long accessCount) {
+		super();
+		this.id = id;
+		this.urlOriginal = urlOriginal;
+		this.urlShorten = urlShorten;
+		this.alias = alias;
+		this.dateCreate = dateCreate;
+		this.accessCount = accessCount;
+	}
+
 	public Long getId() {
 		return id;
 	}
