@@ -22,7 +22,7 @@ public class ShortenService {
 	
 	public ShortenDTO shortenUrl(String originalUrl, String customAlias) {
 		
-		if(customAlias != null && repository.findByAlias(customAlias) != null) {
+		if(customAlias != null && findByAlias(customAlias) != null) {
 			throw new RuntimeException();
 		}
 		var alias = this.generateAlias(originalUrl);
@@ -43,7 +43,7 @@ public class ShortenService {
 	
 	public String redirecionaAutomaticoUrl(String customAlias) {
 		
-		var shorten = repository.findByAlias(customAlias);
+		var shorten = findByAlias(customAlias);
 		if(shorten == null) {
 			throw new IllegalArgumentException("SHORTENED URL NOT FOUND");
 		}
@@ -52,6 +52,10 @@ public class ShortenService {
 	
 	public List<Shorten> getTop10MostAccessedURLs() {
 		return repository.findFirst10ByOrderByAccessCountDesc().get();
+	}
+	
+	public Shorten findByAlias(String customAlias) {
+		return repository.findByAlias(customAlias);
 	}
 	
 	private String generateAlias(String originalUrl) {
